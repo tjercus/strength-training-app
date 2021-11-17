@@ -1,0 +1,19 @@
+{
+  "name": "strength-training-app",
+  "version": "1.0.0",
+  "description": "strength training app",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "data.either": "1.5.1",
+    "ramda": "0.25.0",
+    "saladbar": "2.0.3"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.6.1"
+  },
+  "keywords": []
+}

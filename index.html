@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>strength training app</title>
+    <meta charset="UTF-8" />
+
+    <link rel="stylesheet" href="https://unpkg.com/xp.css" />
+    <style type="text/css">
+        .window-body {
+          padding: 0.1em;
+        }        
+        #app-window {
+          margin: 2em;
+          width: 475px;
+        }
+        .grid {
+          border: 1px solid transparent;
+          margin-bottom: 1em;
+          display: grid;
+          grid-template-columns: 50px 110px 155px 50px;
+          column-gap: 1em;
+          row-gap: 1em; 
+        }
+        .cell {
+          border: 1px solid transparent;
+          vertical-align: middle;
+        }
+    </style>
+  </head>
+
+  <body>
+    <div class="window" id="app-window">
+      <div class="title-bar">
+        <div class="title-bar-text">
+          Strength Training App
+        </div>
+
+        <div class="title-bar-controls">
+          <button aria-label="Minimize"></button>
+          <button aria-label="Maximize"></button>
+          <button aria-label="Close"></button>
+        </div>
+      </div>
+      
+      <div class="window-body">
+        
+        <p>Session at &nbsp;&nbsp;&nbsp;<input placeholder="dd-mm-yyyy" style="width: 6em;" type="text" /></p>
+
+        <fieldset>
+        <section class="grid">
+          <div class="cell">
+            Exercise
+          </div>
+          <div class="cell">
+            <select>
+              <option>donkey kicks</option>
+              <option>dumbell rows</option>
+              <option>firehydrants</option>
+              <option>push-ups</option>
+              <option>pull-ups</option>
+            </select>
+          </div>
+          <div class="cell">
+            <input placeholder="kg" style="width: 4em;" type="text" />
+            &nbsp;kg&nbsp;x&nbsp;
+            <input placeholder="reps" style="width: 4em;" type="text" />
+            &nbsp;reps&nbsp;
+          </div>
+          <div class="cell">
+            <button id="btn-add-set" style="width: 2em;">Add Set</button>
+          </div>
+        </section>
+        <button id="btn-add-exercise" style="width: auto;">Add Exercise</button>
+      </fieldset>        
+
+        <section class="field-row" style="justify-content: flex-end">          
+          <button>Save</button>
+          <button>Cancel</button>
+        </section>
+      </div>
+    </div>
+    <script src="src/index.js"></script>
+  </body> 
+</html>
