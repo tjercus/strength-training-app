@@ -8,12 +8,17 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
-    "data.either": "1.5.1",
-    "ramda": "0.25.0",
-    "saladbar": "2.0.3"
+    "prettier": "^2.4.1",
+    "ramda": "^0.27.1",
+    "saladbar": "^2.0.8"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.6.1"
+    "parcel-bundler": "^1.12.5"
   },
-  "keywords": []
+  "keywords": [
+    "saladbar",
+    "ramda",
+    "fp",
+    "xp"
+  ]
 }

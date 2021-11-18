@@ -1,0 +1,19 @@
+.window-body {
+  padding: 0.1em;
+}
+#app-window {
+  margin: 2em;
+  width: 475px;
+}
+.grid-header, .grid-row {
+  border: 1px solid transparent;
+  margin-bottom: 1em;
+  display: grid;
+  grid-template-columns: 125px 155px 125px;
+  column-gap: 1em;
+  row-gap: 1em;
+}
+.cell {
+  border: 1px solid transparent;
+  vertical-align: middle;
+}
