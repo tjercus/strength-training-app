@@ -5,6 +5,24 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="https://unpkg.com/xp.css" />
     <link rel="stylesheet" href="index.css" />
+    <template id="template-fieldset-set">
+      <span class="fieldset-set">
+        <input
+          class="input-weight"
+          placeholder="kg"
+          style="width: 4em"
+          type="text"
+        />
+        &nbsp;kg&nbsp;x&nbsp;
+        <input
+          class="input-reps"
+          placeholder="reps"
+          style="width: 4em"
+          type="text"
+        />
+        &nbsp;reps&nbsp;
+      </span>
+    </template>
   </head>
 
   <body>
@@ -21,11 +39,8 @@
 
       <div class="window-body">
         <p>
-          Session at &nbsp;&nbsp;&nbsp;<input
-            placeholder="dd-mm-yyyy"
-            style="width: 6em"
-            type="text"
-          />
+          Session at
+          <input placeholder="dd-mm-yyyy" style="width: 6em" type="text" />
         </p>
 
         <fieldset>
@@ -36,7 +51,7 @@
               <div class="cell">Actions</div>
             </header>
             <div class="grid-body">
-              <div class="grid-row">
+              <div class="grid-row" data-row-id="a1">
                 <div class="cell">
                   <select>
                     <option>...</option>
@@ -47,26 +62,9 @@
                     <option>pull-ups</option>
                   </select>
                 </div>
+                <div class="cell cell-fieldset-set"></div>
                 <div class="cell">
-                  <span class="fieldset-set">
-                    <input
-                      class="input-weight"
-                      placeholder="kg"
-                      style="width: 4em"
-                      type="text"
-                    />
-                    &nbsp;kg&nbsp;x&nbsp;
-                    <input
-                      class="input-reps"
-                      placeholder="reps"
-                      style="width: 4em"
-                      type="text"
-                    />
-                    &nbsp;reps&nbsp;
-                  </span>
-                </div>
-                <div class="cell">
-                  <button class="btn-add-set">Add Set</button>
+                  <button class="btn-add-set" value="a1">Add Set</button>
                 </div>
               </div>
             </div>
