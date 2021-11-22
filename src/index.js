@@ -1,5 +1,13 @@
-import { on, setProp, dom, getProp, setAttr } from "saladbar";
-import { concat, curry, pipe } from "ramda";
+import {
+  on,
+  setProp,
+  dom,
+  getAttr,
+  getProp,
+  setAttr,
+  hasClass,
+} from "saladbar";
+import { concat, cond, curry, includes, pipe } from "ramda";
 import Either from "data.either";
 import { v4 as uuid } from "uuid";
 
@@ -111,16 +119,21 @@ addExercise();
 
 on(
   "click",
-  (evt) => addSetToCell(evt.target.value), // TODO filter to handle ONLY .btn-add-set
-  ".grid" // click on a parent of all buttons to use event-bubbling
-);
-
-on(
-  "click",
-  (evt) => deleteSetFromCell(evt.target.value), // TODO filter to handle ONLY .btn-add-set
-  ".grid" // click on a parent of all buttons to use event-bubbling
+  (evt) => {
+    cond([
+      [hasClass("btn-add-set"), (evt) => addSetToCell(evt.target.value)],
+      [
+        hasClass("btn-delete-set"),
+        (evt) => deleteSetFromCell(evt.target.value),
+      ],
+      [
+        hasClass("btn-delete-exercise"),
+        (evt) => deleteExercise(evt.target.value),
+      ],
+      [() => true, logAndPass("unhandled click evt on .grid")],
+    ])(evt);
+  },
+  ".grid" // click on a parent of all grid buttons to use event-bubbling
 );
 
 on("click", () => addExercise(), "#btn-add-exercise");
-
-on("click", (evt) => deleteExercise(evt.target.value), ".grid");
