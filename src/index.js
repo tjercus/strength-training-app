@@ -27,6 +27,8 @@ const getInnerHtmlEither = (selOrEl) =>
  */
 const setInnerHtml = setProp("innerHTML");
 
+const removeElement = (el) => el.remove();
+
 /**
  * Given two Eithers, make a new one with both it's contents concatenated (string or list)
  * Note that if one of the Eithers is a Left (null etc.) then the result will be Left
@@ -74,9 +76,7 @@ const addSetToCell = (rowId) => {
 };
 
 const deleteSetFromCell = (setId) =>
-  dom(`.cell-sets .fieldset-set[data-set-id='${setId}']`).map((el) =>
-    el.remove()
-  );
+  dom(`.cell-sets .fieldset-set[data-set-id='${setId}']`).map(removeElement);
 
 const addExercise = () => {
   const gridBodyEither = dom(".grid-body");
@@ -92,9 +92,17 @@ const addExercise = () => {
     const newId = uuid();
     setAttr("data-row-id", newId, dom("div.grid-row:last-child", rows));
     setAttr("value", newId, dom("div.grid-row:last-child .btn-add-set", rows));
+    setAttr(
+      "value",
+      newId,
+      dom("div.grid-row:last-child .btn-delete-exercise", rows)
+    );
     addSetToCell(newId);
   });
 };
+
+const deleteExercise = (rowId) =>
+  dom(`div[data-row-id='${rowId}']`).map(removeElement);
 
 /* ---------------------- side effects for runtime below ------------------------ */
 
@@ -114,3 +122,5 @@ on(
 );
 
 on("click", () => addExercise(), "#btn-add-exercise");
+
+on("click", (evt) => deleteExercise(evt.target.value), ".grid");
