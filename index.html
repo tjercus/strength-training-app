@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://unpkg.com/xp.css" />
     <link rel="stylesheet" href="index.css" />
     <template id="template-cell-sets">
-      <span class="fieldset-set">
+      <span class="fieldset-set" data-set-id="b1">
         <input
           class="input-weight"
           placeholder="kg"
@@ -21,6 +21,7 @@
           type="text"
         />
         &nbsp;reps&nbsp;
+        <button class="btn-delete-set" value="b1">Delete Set</button>
       </span>
     </template>
     <template id="template-grid-row">
@@ -38,6 +39,7 @@
         <div class="cell cell-sets"></div>
         <div class="cell">
           <button class="btn-add-set" value="a1">Add Set</button>
+          <button id="btn-delete-exercise" value="a1">Delete Exercise</button>
         </div>
       </div>
     </template>

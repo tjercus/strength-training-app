@@ -62,8 +62,21 @@ const addSetToCell = (rowId) => {
   setInnerHtml(
     concatEithers(currentHtmlEither, templateCellSetsHtmlEither),
     cellSetsEither
-  );
+  ).map((sets) => {
+    const newId = uuid();
+    setAttr("data-set-id", newId, dom(".fieldset-set:last-child", sets));
+    setAttr(
+      "value",
+      newId,
+      dom(".fieldset-set:last-child .btn-delete-set", sets)
+    );
+  });
 };
+
+const deleteSetFromCell = (setId) =>
+  dom(`.cell-sets .fieldset-set[data-set-id='${setId}']`).map((el) =>
+    el.remove()
+  );
 
 const addExercise = () => {
   const gridBodyEither = dom(".grid-body");
@@ -91,6 +104,12 @@ addExercise();
 on(
   "click",
   (evt) => addSetToCell(evt.target.value), // TODO filter to handle ONLY .btn-add-set
+  ".grid" // click on a parent of all buttons to use event-bubbling
+);
+
+on(
+  "click",
+  (evt) => deleteSetFromCell(evt.target.value), // TODO filter to handle ONLY .btn-add-set
   ".grid" // click on a parent of all buttons to use event-bubbling
 );
 
