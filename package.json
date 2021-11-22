@@ -11,7 +11,8 @@
     "data.either": "^1.5.2",
     "prettier": "^2.4.1",
     "ramda": "^0.27.1",
-    "saladbar": "^2.0.8"
+    "saladbar": "^2.0.8",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.5"
