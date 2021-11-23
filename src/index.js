@@ -1,13 +1,15 @@
+import { on, setProp, dom, getProp, setAttr, hasClass } from "saladbar";
 import {
-  on,
-  setProp,
-  dom,
-  getAttr,
-  getProp,
-  setAttr,
-  hasClass,
-} from "saladbar";
-import { concat, cond, curry, includes, pipe } from "ramda";
+  chain,
+  compose,
+  concat,
+  cond,
+  curry,
+  includes,
+  pipe,
+  prop,
+  split,
+} from "ramda";
 import Either from "data.either";
 import { v4 as uuid } from "uuid";
 
@@ -35,7 +37,16 @@ const getInnerHtmlEither = (selOrEl) =>
  */
 const setInnerHtml = setProp("innerHTML");
 
+// TODO this not safe
 const removeElement = (el) => el.remove();
+
+/**
+ * Like 'getAttr' but taking in an el instead of an Either<el>|el
+ * getAttribute :: string -> DOM Element -> string
+ */
+const getAttribute = curry((attributeName, el) =>
+  Either.fromNullable(el.getAttribute(attributeName))
+);
 
 /**
  * Given two Eithers, make a new one with both it's contents concatenated (string or list)
@@ -51,6 +62,29 @@ const concatEithers = (anEither, anotherEither) =>
  */
 const withDefault = curry((defaultValue, ei) =>
   ei.isRight ? ei : Either.of(defaultValue)
+);
+
+/**
+ * eventTargetHasClass :: string -> Either Error a -> boolean
+ */
+const eventTargetHasClass = curry((className, evtEither) =>
+  // evtEither
+  //   .map(prop("target"))
+  //   .map(getAttribute("class"))
+  //   .map(chain(split(" ")))
+  //   .map(includes(className))
+  //   .getOrElse(false)
+  evtEither
+    .map(
+      pipe(
+        prop("target"),
+        logAndPass("after getting prop target"),
+        getAttribute("class"),
+        chain(split(" ")),
+        includes(className)
+      )
+    )
+    .getOrElse(false)
 );
 
 /* --------------------------- application specific utils ------------------------- */
@@ -119,20 +153,25 @@ addExercise();
 
 on(
   "click",
-  (evt) => {
+  compose(
     cond([
-      [hasClass("btn-add-set"), (evt) => addSetToCell(evt.target.value)],
       [
-        hasClass("btn-delete-set"),
-        (evt) => deleteSetFromCell(evt.target.value),
+        eventTargetHasClass("btn-add-set"),
+        (evtEither) => evtEither.map((evt) => addSetToCell(evt.target.value)),
       ],
       [
-        hasClass("btn-delete-exercise"),
-        (evt) => deleteExercise(evt.target.value),
+        eventTargetHasClass("btn-delete-set"),
+        (evtEither) =>
+          evtEither.map((evt) => deleteSetFromCell(evt.target.value)),
+      ],
+      [
+        eventTargetHasClass("btn-delete-exercise"),
+        (evtEither) => evtEither.map((evt) => deleteExercise(evt.target.value)),
       ],
       [() => true, logAndPass("unhandled click evt on .grid")],
-    ])(evt);
-  },
+    ]),
+    Either.fromNullable
+  ),
   ".grid" // click on a parent of all grid buttons to use event-bubbling
 );
 
