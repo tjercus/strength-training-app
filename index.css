@@ -3,17 +3,21 @@
 }
 #app-window {
   margin: 2em;
-  width: 475px;
+  width: 620px;
 }
 .grid-header, .grid-row {
   border: 1px solid transparent;
   margin-bottom: 1em;
   display: grid;
-  grid-template-columns: 125px 155px 125px;
+  grid-template-columns: 125px 240px auto;
   column-gap: 1em;
   row-gap: 1em;
 }
 .cell {
   border: 1px solid transparent;
   vertical-align: middle;
+}
+
+.input-weight {
+  margin-bottom: 0.25em;
 }

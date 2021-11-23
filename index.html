@@ -5,8 +5,8 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="https://unpkg.com/xp.css" />
     <link rel="stylesheet" href="index.css" />
-    <template id="template-fieldset-set">
-      <span class="fieldset-set">
+    <template id="template-cell-sets">
+      <span class="fieldset-set" data-set-id="b1">
         <input
           class="input-weight"
           placeholder="kg"
@@ -21,7 +21,27 @@
           type="text"
         />
         &nbsp;reps&nbsp;
+        <button class="btn-delete-set" value="b1">Delete Set</button>
       </span>
+    </template>
+    <template id="template-grid-row">
+      <div class="grid-row" data-row-id="a1">
+        <div class="cell">
+          <select>
+            <option>...</option>
+            <option>donkey kicks</option>
+            <option>dumbbell rows</option>
+            <option>firehydrants</option>
+            <option>push-ups</option>
+            <option>pull-ups</option>
+          </select>
+        </div>
+        <div class="cell cell-sets"></div>
+        <div class="cell">
+          <button class="btn-add-set" value="a1">Add Set</button>
+          <button class="btn-delete-exercise" value="a1">Delete Exercise</button>
+        </div>
+      </div>
     </template>
   </head>
 
@@ -51,25 +71,8 @@
               <div class="cell">Actions</div>
             </header>
             <div class="grid-body">
-              <div class="grid-row" data-row-id="a1">
-                <div class="cell">
-                  <select>
-                    <option>...</option>
-                    <option>donkey kicks</option>
-                    <option>dumbbell rows</option>
-                    <option>firehydrants</option>
-                    <option>push-ups</option>
-                    <option>pull-ups</option>
-                  </select>
-                </div>
-                <div class="cell cell-fieldset-set"></div>
-                <div class="cell">
-                  <button class="btn-add-set" value="a1">Add Set</button>
-                </div>
-              </div>
             </div>
           </section>
-
           <button id="btn-add-exercise">Add Exercise</button>
         </fieldset>
 
