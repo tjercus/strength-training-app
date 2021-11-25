@@ -1,9 +1,8 @@
 import { chain, concat, curry, includes, pipe, prop, split } from "ramda";
 import { dom, getAttr, getProp, setProp } from "saladbar";
 import Either from "data.either";
-
-const isNullOrUndefined = (value) =>
-  typeof value === "undefined" || value === null;
+import isEither from "saladbar/lib/es/utils/is-either";
+import guaranteeEither from "saladbar/lib/es/utils/guaranteeEither";
 
 /**
  * Utils for working with the DOM (not in Saladbar)
@@ -12,17 +11,17 @@ const isNullOrUndefined = (value) =>
 // TODO this is not safe
 export const removeElement = (el) => el.remove();
 
-// TODO this is not safe
 /**
- * appendChild :: (DOM Element, DOM Element) -> Either Error DOM Element
+ * appendChild :: (DOM Element | Either Error DOM Element, DOM Element | Either Error DOM Element) -> Either Error DOM Element
  */
-export const appendChild = (targetEl, childEl) => targetEl.appendChild(childEl);
-// Either.fromNullable(
-//   isNullOrUndefined(targetEl)
-//     ? Error("target Element was null")
-//     : targetEl.appendChild(childEl)
-// );
-
+export const appendChild = (target, child) => {
+  // targetEl.appendChild(childEl);
+  const targetEither = guaranteeEither(target);
+  const childEither = guaranteeEither(child);
+  return targetEither.map((el) =>
+    el.appendChild(childEither.getOrElse("error"))
+  );
+};
 /**
  * Apparently one needs to use a construction like this to be able to use a fragment
  */
