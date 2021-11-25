@@ -1,17 +1,14 @@
-import { on, setProp, dom, getProp, setAttr, hasClass } from "saladbar";
-import {
-  chain,
-  compose,
-  concat,
-  cond,
-  curry,
-  includes,
-  pipe,
-  prop,
-  split,
-} from "ramda";
-import Either from "data.either";
+import { on, dom, setAttr, getProp } from "saladbar";
+import { compose, cond, pipe } from "ramda";
 import { v4 as uuid } from "uuid";
+import Either from "data.either";
+//
+import {
+  appendChild,
+  convertFragmentToElement,
+  eventTargetHasClass,
+  removeElement,
+} from "./domUtils";
 
 // debug function to put in a composition
 const logAndPass =
@@ -21,125 +18,48 @@ const logAndPass =
     return value;
   };
 
-/* -------------- utils for working with the DOM (not in Saladbar) ------------------ */
-
-/**
- * Given a selector or Either<Error, DOM Element>, return it's innerHTML
- * getInnerHtmlEither :: String | Selector -> Either Error String
- */
-const getInnerHtmlEither = (selOrEl) =>
-  typeof selOrEl === "string"
-    ? dom(selOrEl).chain(getProp("innerHTML"))
-    : selOrEl.chain(getProp("innerHTML"));
-
-/**
- * setInnerHtml :: DOM Element -> Either Error DOM Element
- */
-const setInnerHtml = setProp("innerHTML");
-
-// TODO this not safe
-const removeElement = (el) => el.remove();
-
-/**
- * Like 'getAttr' but taking in an el instead of an Either<el>|el
- * getAttribute :: string -> DOM Element -> string
- */
-const getAttribute = curry((attributeName, el) =>
-  Either.fromNullable(el.getAttribute(attributeName))
-);
-
-/**
- * Given two Eithers, make a new one with both it's contents concatenated (string or list)
- * Note that if one of the Eithers is a Left (null etc.) then the result will be Left
- * concatEithers :: (Either Error a, Either Error a) -> Either Error a
- */
-const concatEithers = (anEither, anotherEither) =>
-  Either.of(concat).ap(anEither).ap(anotherEither);
-
-/**
- * Takes a default and an Either and returns original or new Either(defaultValue)
- * withDefault :: a -> Either Error a -> Either Error a
- */
-const withDefault = curry((defaultValue, ei) =>
-  ei.isRight ? ei : Either.of(defaultValue)
-);
-
-/**
- * eventTargetHasClass :: string -> Either Error a -> boolean
- */
-const eventTargetHasClass = curry((className, evtEither) =>
-  // evtEither
-  //   .map(prop("target"))
-  //   .map(getAttribute("class"))
-  //   .map(chain(split(" ")))
-  //   .map(includes(className))
-  //   .getOrElse(false)
-  evtEither
-    .map(
-      pipe(
-        prop("target"),
-        logAndPass("after getting prop target"),
-        getAttribute("class"),
-        chain(split(" ")),
-        includes(className)
-      )
-    )
-    .getOrElse(false)
-);
-
 /* --------------------------- application specific utils ------------------------- */
-
-const templateGridRowHtmlEither = getInnerHtmlEither("#template-grid-row");
-const templateCellSetsHtmlEither = getInnerHtmlEither("#template-cell-sets");
 
 /**
  * Add a new blank workout Set to the cell of Sets
  * addSetToCell :: string -> Either Error DOM Element
  */
-const addSetToCell = (rowId) => {
-  const cellSetsEither = dom(`div[data-row-id='${rowId}'] .cell-sets`);
-  const currentHtmlEither = pipe(
-    getInnerHtmlEither,
-    withDefault("")
-  )(cellSetsEither);
-
-  setInnerHtml(
-    concatEithers(currentHtmlEither, templateCellSetsHtmlEither),
-    cellSetsEither
-  ).map((sets) => {
-    const newId = uuid();
-    setAttr("data-set-id", newId, dom(".fieldset-set:last-child", sets));
-    setAttr(
-      "value",
-      newId,
-      dom(".fieldset-set:last-child .btn-delete-set", sets)
-    );
+const addSetToCell = (rowId) =>
+  dom("#template-cell-sets").map((templateFragment) => {
+    dom(`div[data-row-id='${rowId}'] .cell-sets`).map((sets) => {
+      appendChild(sets, convertFragmentToElement(templateFragment)); //.map(pipe(getProp("innerHTML"), console.log));
+      // TODO these next operations depend timewise on appendChild
+      const newId = uuid();
+      setAttr("data-set-id", newId, dom(".fieldset-set:last-child", sets));
+      setAttr(
+        "value",
+        newId,
+        dom(".fieldset-set:last-child .btn-delete-set", sets)
+      );
+    });
   });
-};
 
 const deleteSetFromCell = (setId) =>
   dom(`.cell-sets .fieldset-set[data-set-id='${setId}']`).map(removeElement);
 
 const addExercise = () => {
-  const gridBodyEither = dom(".grid-body");
-  const currentHtmlEither = pipe(
-    getInnerHtmlEither,
-    withDefault("")
-  )(gridBodyEither);
-
-  setInnerHtml(
-    concatEithers(currentHtmlEither, templateGridRowHtmlEither),
-    gridBodyEither
-  ).map((rows) => {
-    const newId = uuid();
-    setAttr("data-row-id", newId, dom("div.grid-row:last-child", rows));
-    setAttr("value", newId, dom("div.grid-row:last-child .btn-add-set", rows));
-    setAttr(
-      "value",
-      newId,
-      dom("div.grid-row:last-child .btn-delete-exercise", rows)
-    );
-    addSetToCell(newId);
+  dom("#template-grid-row").map((templateFragment) => {
+    dom(".grid-body").map((gridBody) => {
+      appendChild(gridBody, convertFragmentToElement(templateFragment));
+      const newId = uuid();
+      setAttr("data-row-id", newId, dom("div.grid-row:last-child", gridBody));
+      setAttr(
+        "value",
+        newId,
+        dom("div.grid-row:last-child .btn-add-set", gridBody)
+      );
+      setAttr(
+        "value",
+        newId,
+        dom("div.grid-row:last-child .btn-delete-exercise", gridBody)
+      );
+      addSetToCell(newId);
+    });
   });
 };
 
@@ -151,6 +71,8 @@ const deleteExercise = (rowId) =>
 // inject first Exercise (with one Set) in the DOM (from a template)
 addExercise();
 
+// this click handler handles all clicks on the .grid,
+// using event-bubbling to handle clicks on buttons added at runtime
 on(
   "click",
   compose(
@@ -172,7 +94,7 @@ on(
     ]),
     Either.fromNullable
   ),
-  ".grid" // click on a parent of all grid buttons to use event-bubbling
+  ".grid"
 );
 
 on("click", () => addExercise(), "#btn-add-exercise");
