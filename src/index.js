@@ -27,7 +27,7 @@ const logAndPass =
 const addSetToCell = (rowId) =>
   dom("#template-cell-sets").map((templateFragment) => {
     dom(`div[data-row-id='${rowId}'] .cell-sets`).map((sets) => {
-      appendChild(sets, convertFragmentToElement(templateFragment)); //.map(pipe(getProp("innerHTML"), console.log));
+      appendChild(sets, convertFragmentToElement(templateFragment));
       // TODO these next operations depend timewise on appendChild
       const newId = uuid();
       setAttr("data-set-id", newId, dom(".fieldset-set:last-child", sets));
@@ -71,8 +71,10 @@ const deleteExercise = (rowId) =>
 // inject first Exercise (with one Set) in the DOM (from a template)
 addExercise();
 
-// this click handler handles all clicks on the .grid,
-// using event-bubbling to handle clicks on buttons added at runtime
+/**
+ * this click handler handles all clicks on the .grid,
+ * using event-bubbling to handle clicks on buttons added at runtime
+ */
 on(
   "click",
   compose(

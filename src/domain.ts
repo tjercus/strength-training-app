@@ -1,3 +1,6 @@
+
+// TODO use these when introducing typescript
+
 interface ExerciseSet {
   weight: number;
   reps: number;

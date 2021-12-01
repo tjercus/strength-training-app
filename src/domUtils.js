@@ -1,21 +1,22 @@
 import { chain, concat, curry, includes, pipe, prop, split } from "ramda";
 import { dom, getAttr, getProp, setProp } from "saladbar";
 import Either from "data.either";
-import isEither from "saladbar/lib/es/utils/is-either";
 import guaranteeEither from "saladbar/lib/es/utils/guaranteeEither";
+
+const isNullOrUndefined = (value) =>
+  typeof value === "undefined" || value === null;
 
 /**
  * Utils for working with the DOM (not in Saladbar)
  */
 
-// TODO this is not safe
+// TODO Error handling and null safety
 export const removeElement = (el) => el.remove();
 
 /**
  * appendChild :: (DOM Element | Either Error DOM Element, DOM Element | Either Error DOM Element) -> Either Error DOM Element
  */
 export const appendChild = (target, child) => {
-  // targetEl.appendChild(childEl);
   const targetEither = guaranteeEither(target);
   const childEither = guaranteeEither(child);
   return targetEither.map((el) =>
@@ -24,21 +25,19 @@ export const appendChild = (target, child) => {
 };
 /**
  * Apparently one needs to use a construction like this to be able to use a fragment
+ * convertFragmentToElement :: DOM Fragment -> Either Error DOM Element
  */
 export const convertFragmentToElement = (frag) =>
-  document.createRange().createContextualFragment(frag.innerHTML);
-// Either.fromNullable(
-//   document
-//     .createRange()
-//     .createContextualFragment(
-//       isNullOrUndefined(frag) ? Error("Fragment is null") : frag.innerHTML
-//     )
-// );
+  isNullOrUndefined(frag)
+    ? Either.Left(Error("Fragment is not usable"))
+    : new DOMParser().parseFromString(frag.innerHTML, "text/html").body
+        .firstElementChild;
 
 /**
  * eventTargetHasClass :: string -> Either Error a -> boolean
  */
 export const eventTargetHasClass = curry((className, evtEither) =>
+  // You can also work with map instead of pipe:
   // evtEither
   //   .map(prop("target"))
   //   .map(getAttribute("class"))
