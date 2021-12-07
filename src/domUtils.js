@@ -10,19 +10,32 @@ const isNullOrUndefined = (value) =>
  * Utils for working with the DOM (not in Saladbar)
  */
 
-// TODO Error handling and null safety
-export const removeElement = (el) => el.remove();
+/**
+ * curriedAppendChild :: DOM Element -> DOM Element -> DOM Node
+ */
+const curriedAppendChild = curry((parentEl, childEl) =>
+  parentEl.appendChild(childEl)
+);
 
 /**
- * appendChild :: (DOM Element | Either Error DOM Element, DOM Element | Either Error DOM Element) -> Either Error DOM Element
+ * removeElement :: DOM Element -> Either Error DOM Element
  */
-export const appendChild = (target, child) => {
-  const targetEither = guaranteeEither(target);
-  const childEither = guaranteeEither(child);
-  return targetEither.map((el) =>
-    el.appendChild(childEither.getOrElse("error"))
-  );
-};
+export const removeElement = (el) =>
+  isNullOrUndefined(el)
+    ? Either.Left(Error("Element was null"))
+    : Either.Right(el.remove());
+
+/**
+ * lifts the (curried! version of) DOM function 'appendChild' into the monadic world so it's arguments can
+ *   be applied even though they are wrapped in an Either
+ * appendChild :: (DOM Element | Either Error DOM Element, DOM Element | Either Error DOM Element)
+ *   -> Either Error DOM Element
+ */
+export const appendChild = (target, child) =>
+  Either.of(curriedAppendChild)
+    .ap(guaranteeEither(target))
+    .ap(guaranteeEither(child));
+
 /**
  * Apparently one needs to use a construction like this to be able to use a fragment
  * convertFragmentToElement :: DOM Fragment -> Either Error DOM Element
